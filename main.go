@@ -17,7 +17,7 @@ type EmailMessage struct {
 	Content string `json:"content"`
 }
 
-func processInBatch(sqsQueue *sqs.SQS, guard <-chan struct{}, wt *sync.WaitGroup, total int) {
+func processInBatch(sqsQueue *sqs.SQS, wt *sync.WaitGroup, total int) {
 
 	messages := []*sqs.SendMessageBatchRequestEntry{}
 	for index := 0; index < total; index++ {
@@ -44,7 +44,7 @@ func processInBatch(sqsQueue *sqs.SQS, guard <-chan struct{}, wt *sync.WaitGroup
 
 	}
 	wt.Done()
-	<-guard
+	// <-guard
 }
 
 func main() {
@@ -58,13 +58,13 @@ func main() {
 
 	sqsQueue := sqs.New(sess)
 
-	maxGoroutines := 80
-	guard := make(chan struct{}, maxGoroutines)
+	// maxGoroutines := 80
+	// guard := make(chan struct{}, maxGoroutines)
 	var wt sync.WaitGroup
 	for index := 0; index < 100000; index += 500 {
 		wt.Add(1)
-		guard <- struct{}{}
-		go processInBatch(sqsQueue, guard, &wt, 500)
+		// guard <- struct{}{}
+		go processInBatch(sqsQueue, &wt, 500)
 	}
 
 	wt.Wait()
