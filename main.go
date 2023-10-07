@@ -116,7 +116,7 @@ func main() {
 	// maxGoroutines := 80
 	// guard := make(chan struct{}, maxGoroutines)
 	var wt sync.WaitGroup
-	for index := 0; index < 100000; index += 500 {
+	for index := 0; index < 500000; index += 500 {
 		wt.Add(1)
 		// guard <- struct{}{}
 		go processInBatch(sqsQueue, &wt, 500)
