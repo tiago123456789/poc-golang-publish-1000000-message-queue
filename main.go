@@ -8,21 +8,18 @@ import (
 	"sync"
 	"time"
 
+	queueMessage "poc-publish-sqs-golang/messages"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/google/uuid"
 )
 
-type EmailMessage struct {
-	To      string `json:"to"`
-	Content string `json:"content"`
-}
-
 func processInBatch(sqsQueue *sqs.SQS, wt *sync.WaitGroup, total int) {
 	messages := []*sqs.SendMessageBatchRequestEntry{}
 	for index := 0; index < total; index++ {
-		emailToJson, _ := json.Marshal(EmailMessage{
+		emailToJson, _ := json.Marshal(queueMessage.EmailMessage{
 			To:      "tiago@gmail.com",
 			Content: "Hi my friend",
 		})
