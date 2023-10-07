@@ -20,7 +20,6 @@ type EmailMessage struct {
 }
 
 func processInBatch(sqsQueue *sqs.SQS, wt *sync.WaitGroup, total int) {
-
 	messages := []*sqs.SendMessageBatchRequestEntry{}
 	for index := 0; index < total; index++ {
 		emailToJson, _ := json.Marshal(EmailMessage{
@@ -46,7 +45,6 @@ func processInBatch(sqsQueue *sqs.SQS, wt *sync.WaitGroup, total int) {
 
 	}
 	wt.Done()
-	// <-guard
 }
 
 type HTTPClientSettings struct {
@@ -99,10 +97,6 @@ func main() {
 		return
 	}
 
-	// sess := session.Must(session.NewSession(&aws.Config{
-	// 	HTTPClient: httpClient,
-	// }))
-
 	sess, _ := session.NewSessionWithOptions(session.Options{
 		Profile: "tiago",
 		Config: aws.Config{
@@ -113,13 +107,10 @@ func main() {
 
 	sqsQueue := sqs.New(sess)
 
-	// maxGoroutines := 80
-	// guard := make(chan struct{}, maxGoroutines)
 	var wt sync.WaitGroup
-	for index := 0; index < 1000000; index += 100 {
+	for index := 0; index < 1000000; index += 300 {
 		wt.Add(1)
-		// guard <- struct{}{}
-		go processInBatch(sqsQueue, &wt, 100)
+		go processInBatch(sqsQueue, &wt, 300)
 	}
 
 	wt.Wait()
