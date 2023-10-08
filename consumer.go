@@ -59,7 +59,7 @@ func main() {
 	sqsQueue := sqs.New(sess)
 
 	var wt sync.WaitGroup
-	for index := 0; index < 1000; index += 1 {
+	for index := 0; index < 100; index += 1 {
 		wt.Add(1)
 		go consumeMessage(sqsQueue, &wt)
 	}
